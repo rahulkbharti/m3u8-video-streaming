@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M3U8 Player</title>
+  
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/8.5.0/video-js.css" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .video-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #000;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>M3U8 Player</h1>
+  
+  <div class="video-container">
+    <!-- Video.js Player -->
+    <video
+      id="m3u8-player"
+      class="video-js vjs-default-skin"
+      controls
+      preload="auto"
+      width="800"
+      height="450"
+    >
+    </video>
+  </div>
+  
+  <!-- Video.js JavaScript -->
+  <script src="https://vjs.zencdn.net/8.5.0/video.min.js"></script>
+  
+  <!-- HLS.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0"></script>
+  
+  <script>
+    // Initialize the Video.js player
+    const player = videojs('m3u8-player', {
+      techOrder: ['html5'],
+      autoplay: false,
+      preload: 'auto',
+      controls: true,
+    });
+
+    // M3U8 URL
+    const m3u8Url = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"; // Replace with your M3U8 URL
+
+    // Check if the browser supports native HLS
+    if (player.tech_.el_.canPlayType('application/vnd.apple.mpegurl')) {
+      player.src({ src: m3u8Url, type: 'application/x-mpegURL' });
+    } else if (Hls.isSupported()) {
+      // Use HLS.js if native HLS is not supported
+      const hls = new Hls();
+      hls.loadSource(m3u8Url);
+      hls.attachMedia(player.tech_.el_);
+    } else {
+      alert("Your browser does not support HLS playback.");
+    }
+  </script>
+</body>
+</html>

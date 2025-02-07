@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Upload</title>
+</head>
+<body>
+  <h1>Upload Video</h1>
+  <input type="file" id="fileInput" />
+  <button id="uploadButton">Upload</button>
+  <div id="progress">
+    <p>Progress: <span id="progressPercentage">0%</span></p>
+    <progress id="progressBar" value="0" max="100"></progress>
+  </div>
+
+  <script>
+    document.getElementById('uploadButton').addEventListener('click', async () => {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      if (file) {
+        await uploadFile(file);
+      } else {
+        alert('Please select a file first.');
+      }
+    });
+
+    async function uploadFile(file) {
+      const formData = new FormData();
+      formData.append('video', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:3000/files/upload', true);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentage = Math.round((event.loaded / event.total) * 100);
+          document.getElementById('progressPercentage').innerText = `${percentage}%`;
+          document.getElementById('progressBar').value = percentage;
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          alert('Video uploaded successfully');
+        } else {
+          alert('Error uploading video');
+        }
+      };
+
+      xhr.send(formData);
+    }
+  </script>
+</body>
+</html>

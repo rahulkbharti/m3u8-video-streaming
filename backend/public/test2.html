@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload</title>
+</head>
+<body>
+  <h1>Upload File</h1>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="file" id="file" required>
+    <button type="submit">Upload</button>
+  </form>
+  <div id="progress">
+    <p>Progress: <span id="progressPercentage">0%</span></p>
+    <progress id="progressBar" value="0" max="100"></progress>
+  </div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const fileInput = document.getElementById('file');
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('video', file);
+
+      const options = {
+        method: 'POST',
+        body: formData,
+        headers: new Headers(),
+        onUploadProgress: (event) => {
+          if (event.lengthComputable) {
+            const percentage = Math.round((event.loaded / event.total) * 100);
+            document.getElementById('progressPercentage').innerText = `${percentage}%`;
+            document.getElementById('progressBar').value = percentage;
+          }
+        }
+      };
+
+      try {
+        const response = await fetch('http://localhost:3000/files/upload', options);
+        if (response.ok) {
+          alert('File uploaded successfully');
+        } else {
+          alert('Error uploading file');
+        }
+      } catch (error) {
+        alert('Error uploading file');
+      }
+    });
+  </script>
+</body>
+</html>
