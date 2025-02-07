@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import fs from 'fs';
 import FileModel from '../models/file_model.js';
 import DB from '../config/db.js';
 import processVideo from '../generate-res.mjs';
@@ -40,11 +41,21 @@ router.post('/upload', upload.single('video'), async (req, res) => {
             res.status(400).send('Please upload a file');
         } else {
             try {
-                // await processVideo("./" + file.path, (resolution, percent) => {
-                //     console.log(`Processing ${resolution}: ${percent}% complete`);
-                // });
+                await processVideo("./" + file.path, (resolution, percent) => {
+                    console.log(`Processing ${resolution}: ${percent}% complete`);
+                });
                 console.log('Video processing completed!');
-                res.json({ message: 'File uploaded successfully' });
+
+                // Delete the file after processing
+                fs.unlink(file.path, (err) => {
+                    if (err) {
+                        console.error('Error deleting file:', err);
+                    } else {
+                        console.log('File deleted successfully');
+                    }
+                });
+
+                res.json({ message: 'File uploaded and processed successfully' });
             } catch (err) {
                 console.error('Error processing video:', err);
                 res.json(err);

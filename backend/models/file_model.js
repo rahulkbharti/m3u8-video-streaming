@@ -1,30 +1,37 @@
-// userModel.js
-import util from 'util';
 import chalk from 'chalk';
 
 class FileModel {
   constructor(database) {
     this.database = database;
-    this.query = util.promisify(database.query).bind(database);
   }
-  async uploadFile(originalname, mimetype, filename, path, size){
+
+  async uploadFile(originalname, mimetype, filename, path, size) {
     const query = 'INSERT INTO uploaded_files (original_name, mimetype, filename, path, size) VALUES (?, ?, ?, ?, ?)';
+    let conn;
     try {
-      const result = await this.query(query,[originalname, mimetype, filename, path, size]);
+      conn = await this.database.getConnection(); // Get a connection from the pool
+      const result = await conn.query(query, [originalname, mimetype, filename, path, size]);
       return result;
     } catch (error) {
-      console.log(chalk.red(error));
+      console.log(chalk.red('Database Error: ', error));
       return error;
+    } finally {
+      if (conn) conn.release(); // Always release the connection back to the pool
     }
-  } 
-  async getAllVideos(){
+  }
+
+  async getAllVideos() {
     const query = "SELECT * FROM uploaded_files";
-    try{
-      const result = await this.query(query);
+    let conn;
+    try {
+      conn = await this.database.getConnection();
+      const result = await conn.query(query);
       return result;
-    }catch(error){
-      console.log(chalk.red(error));
+    } catch (error) {
+      console.log(chalk.red('Database Error: ', error));
       return error;
+    } finally {
+      if (conn) conn.release();
     }
   }
 }

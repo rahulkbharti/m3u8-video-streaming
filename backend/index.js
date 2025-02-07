@@ -34,7 +34,7 @@ app.use(express.json());
 
 // Middleware for logging request time
 app.use((req, res, next) => {
-    console.log(chalk.red("Request [" + req.method + "] :"), chalk.yellow(new Date()));
+    console.log(chalk.red("Request [" + req.url + "] :"), chalk.yellow(new Date()));
     console.log(chalk.red('User Agent:'), chalk.yellow(req.get('user-agent')));
     next();
 });
