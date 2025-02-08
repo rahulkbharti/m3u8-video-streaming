@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 
 app.use(express.static('public'));
 app.get('/', function (req, res) {
-    res.send("Well come ");
+    res.send("Wellcome ");
 });
 
 app.use("/", MainRoutes);

@@ -78,9 +78,24 @@ const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
                 const tsCount = countTsSegments(segmentPath);
                 if (tsCount === 0) throw new Error("No .ts segments found!");
 
+                const timemarks = Array.from({ length: tsCount }, (_, i) =>
+                    ((i + 1) * SEGMENT_DURATION).toString()
+                );
+
                 ffmpeg(filePath)
-                    .on('end', () => {
+                    .on('end', async () => {
                         console.log(`📸 ${tsCount} Thumbnails generated!`);
+
+                        // ✅ Ensure proper filename padding after generation
+                        const files = fs.readdirSync(thumbnailPath)
+                            .filter(file => file.startsWith('thumbnail-'))
+                            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+                        files.forEach((file, index) => {
+                            const newFileName = `thumbnail-${String(index + 1).padStart(3, '0')}.png`;
+                            fs.renameSync(path.join(thumbnailPath, file), path.join(thumbnailPath, newFileName));
+                        });
+
                         resolve();
                     })
                     .on('error', (err) => {
@@ -90,9 +105,9 @@ const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
                     .screenshots({
                         count: tsCount,  // Ensure exact match
                         folder: thumbnailPath,
-                        filename: 'thumbnail-%03d.png',
+                        filename: 'thumbnail-%d.png',  // Basic format (will rename later)
                         size: '160x120',
-                        timemarks: Array.from({ length: tsCount }, (_, i) => (i * SEGMENT_DURATION).toString()),
+                        timemarks: timemarks,
                     });
 
             } catch (err) {
@@ -106,7 +121,7 @@ const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
 const createVTTFile = (thumbnailPath, vttFilePath) => {
     const files = fs.readdirSync(thumbnailPath)
         .filter(file => file.endsWith('.png'))
-        .sort();
+    // .sort();
 
     const vttContent = files.map((file, index) => {
         const timestamp = index * SEGMENT_DURATION;
@@ -126,15 +141,15 @@ const processVideo = async (filePath, onProgress) => {
 
         const { width, height } = await getVideoResolution(resolvedPath);
         const applicableResolutions = [
-            { name: '1080p', width: 1920, height: 1080 },
-            { name: '720p', width: 1280, height: 720 },
-            { name: '480p', width: 854, height: 480 },
+            // { name: '1080p', width: 1920, height: 1080 },
+            // { name: '720p', width: 1280, height: 720 },
+            // { name: '480p', width: 854, height: 480 },
             { name: '360p', width: 640, height: 360 },
         ].filter(res => res.width <= width && res.height <= height);
 
-        if (!applicableResolutions.some(res => res.width === width && res.height === height)) {
-            applicableResolutions.unshift({ name: `${width}x${height}`, width, height });
-        }
+        // if (!applicableResolutions.some(res => res.width === width && res.height === height)) {
+        //     applicableResolutions.unshift({ name: `${width}x${height}`, width, height });
+        // }
 
         createDirectories(baseOutputPath);
 
