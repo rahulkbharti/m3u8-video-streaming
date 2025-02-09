@@ -34,7 +34,7 @@ debug.log
 .env*
 .env.production
 .env.development
-
+app.js
 # Editor directories and files
 .vscode
 .idea
