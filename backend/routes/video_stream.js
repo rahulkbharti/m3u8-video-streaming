@@ -9,25 +9,26 @@ const fileModel = new FileModel(DB);
  * If you don't have any files in /segments folder -> run "generate.mjs" file:
  * it will create a m3u8 list with segmented videos.
  */
-router.get("/", (res) => {
+router.get("/", async (req, res) => { // Added req parameter & made it async
     try {
-        fileModel.getAllVideos().then((files) => {
-            // Convert BigInt values to string before sending JSON response
-            const processedFiles = files.map(file =>
-                Object.fromEntries(Object.entries(file).map(([key, value]) =>
-                    [key, typeof value === "bigint" ? value.toString() : value]
-                ))
-            );
+        const files = await fileModel.getAllVideos(); // Await the DB query
 
-            res.json({ files: processedFiles }); // Send JSON directly
-            // console.log(processedFiles);
-        });
+        // Convert BigInt values to string before sending JSON response
+        const processedFiles = files.map(file =>
+            Object.fromEntries(Object.entries(file).map(([key, value]) =>
+                [key, typeof value === "bigint" ? value.toString() : value]
+            ))
+        );
+
+        // console.log(processedFiles);
+        res.json({ files: processedFiles }); // Send JSON response
 
     } catch (err) {
-        console.log(err);
+        console.log("Error:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
-})
+});
+
 router.get('/:videoId/master.m3u8', (request, response) => {
     const { videoId } = request.params;
     const resolvedPath = path.resolve(`streams/${videoId}/master.m3u8`);

@@ -73,7 +73,7 @@ ${path.join(res.name, `playlist-${res.name}.m3u8`)}`
 // Generate video thumbnails matching .ts segment count
 const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
                 const tsCount = countTsSegments(segmentPath);
                 if (tsCount === 0) throw new Error("No .ts segments found!");
@@ -81,6 +81,10 @@ const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
                 const timemarks = Array.from({ length: tsCount }, (_, i) =>
                     ((i + 1) * SEGMENT_DURATION).toString()
                 );
+
+                // Get original video resolution
+                const { width: originalWidth, height: originalHeight } = await getVideoResolution(filePath);
+                const thumbnailHeight = Math.round((160 / originalWidth) * originalHeight);
 
                 ffmpeg(filePath)
                     .on('end', async () => {
@@ -106,7 +110,7 @@ const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
                         count: tsCount,  // Ensure exact match
                         folder: thumbnailPath,
                         filename: 'thumbnail-%d.png',  // Basic format (will rename later)
-                        size: '160x120',
+                        size: `160x${thumbnailHeight}`,
                         timemarks: timemarks,
                     });
 

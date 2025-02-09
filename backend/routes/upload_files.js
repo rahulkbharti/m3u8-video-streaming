@@ -35,7 +35,10 @@ router.post('/upload', upload.single('video'), async (req, res) => {
     });
     try {
         const file = req.file;
-        let result = await fileModel.uploadFile(file?.originalname, file?.mimetype, file?.filename, file?.path, file?.size);
+        const { title, description } = req.body;
+        // {videoId, title, description, duration}
+        // let result = await fileModel.uploadFile(file?.originalname, file?.mimetype, file?.filename, file?.path, file?.size);
+        let result = await fileModel.uploadFile(file?.filename.split(".")[0], title, description, 0);
         console.log(result);
         if (!file) {
             res.status(400).send('Please upload a file');

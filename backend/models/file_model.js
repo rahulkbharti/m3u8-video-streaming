@@ -5,33 +5,40 @@ class FileModel {
     this.database = database;
   }
 
-  async uploadFile(originalname, mimetype, filename, path, size) {
-    const query = 'INSERT INTO uploaded_files (original_name, mimetype, filename, path, size) VALUES (?, ?, ?, ?, ?)';
-    let conn;
+  // Upload a video file to the database
+  async uploadFile(videoId, title, description, duration) {
+    const query = `INSERT INTO videos (videoId, title, description, duration) 
+                   VALUES ($1, $2, $3, $4) RETURNING *`;
     try {
-      conn = await this.database.getConnection(); // Get a connection from the pool
-      const result = await conn.query(query, [originalname, mimetype, filename, path, size]);
-      return result;
+      const result = await this.database.query(query, [videoId, title, description, duration]);
+      return result.rows[0]; // Return the inserted video data
     } catch (error) {
       console.log(chalk.red('Database Error: ', error));
       return error;
-    } finally {
-      if (conn) conn.release(); // Always release the connection back to the pool
     }
   }
 
+  // Get all videos
   async getAllVideos() {
-    const query = "SELECT * FROM uploaded_files";
-    let conn;
+    const query = "SELECT * FROM videos";
     try {
-      conn = await this.database.getConnection();
-      const result = await conn.query(query);
-      return result;
+      const result = await this.database.query(query);
+      return result.rows; // Return all videos
     } catch (error) {
       console.log(chalk.red('Database Error: ', error));
       return error;
-    } finally {
-      if (conn) conn.release();
+    }
+  }
+
+  // Get a specific video by videoId
+  async getVideoByVideoId(videoId) {
+    const query = "SELECT * FROM videos WHERE videoId = $1";
+    try {
+      const result = await this.database.query(query, [videoId]);
+      return result.rows[0] || null; // Return video if found, else null
+    } catch (error) {
+      console.log(chalk.red('Database Error: ', error));
+      return error;
     }
   }
 }

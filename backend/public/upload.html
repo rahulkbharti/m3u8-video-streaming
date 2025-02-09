@@ -1,36 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Upload with Progress</title>
+    <title>Video Upload</title>
 </head>
+
 <body>
-    <h1>Upload Videos</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" name="videos" id="videos" multiple required>
-        <button type="submit">Upload</button>
-    </form>
-    <div id="progressContainer"></div>
+    <h2>Upload Video</h2>
+    <input type="file" id="fileInput" accept="video/*">
+    <input type="text" id="title" placeholder="Enter title">
+    <input type="text" id="description" placeholder="Enter description">
+    <button id="uploadButton">Upload</button>
+
+    <progress id="progressBar" value="0" max="100"></progress>
+    <p id="progressPercentage">0%</p>
+
     <script>
-        const form = document.getElementById('uploadForm');
-        const progressContainer = document.getElementById('progressContainer');
+        document.getElementById('uploadButton').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const file = fileInput.files[0];
 
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const formData = new FormData(form);
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', file); // Append file
+            formData.append('title', title); // Append text field
+            formData.append('description', description); // Append another text field
+
             const xhr = new XMLHttpRequest();
-
-            xhr.upload.addEventListener('progress', (event) => {
-                if (event.lengthComputable) {
-                    const percentComplete = (event.loaded / event.total) * 100;
-                    progressContainer.textContent = `Upload progress: ${percentComplete.toFixed(2)}%`;
-                }
-            });
-
             xhr.open('POST', 'http://localhost:3000/files/upload', true);
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentage = Math.round((event.loaded / event.total) * 100);
+                    document.getElementById('progressPercentage').innerText = `${percentage}%`;
+                    document.getElementById('progressBar').value = percentage;
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    alert('Video uploaded successfully');
+                } else {
+                    alert('Error uploading video');
+                }
+            };
+
             xhr.send(formData);
         });
     </script>
 </body>
+
 </html>
