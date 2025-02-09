@@ -31,6 +31,9 @@ debug.log
 
 # Environment variables
 .env
+.env*
+.env.production
+.env.development
 
 # Editor directories and files
 .vscode
