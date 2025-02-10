@@ -35,7 +35,7 @@
             formData.append('description', description); // Append another text field
 
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:3000/files/upload', true);
+            xhr.open('POST', '/files/upload', true);
 
             xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable) {
