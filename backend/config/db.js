@@ -37,7 +37,7 @@ const deleteTable = async () => {
 };
 
 // Run table deletion
-// deleteTable();
+deleteTable();
 
 const createTable = async () => {
   const query = `

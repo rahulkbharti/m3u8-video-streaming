@@ -6,15 +6,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Streaming</title>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.6.12/plyr.css" />
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <video id="player" controls autoplay></video>
-    <div id="video-list"></div>
+
+    <header>
+        <div class="logo">YouTube Clone</div>
+    </header>
+
+    <main>
+        <!-- Video Player Section -->
+        <div class="video-container">
+            <video id="player" controls autoplay></video>
+
+            <h1 class="video-title">Sample Video Title</h1>
+            <p class="video-views">1.2M views • 2 days ago</p>
+
+            <!-- Actions -->
+            <div class="video-actions">
+                <button>👍 10K</button>
+                <button>👎 500</button>
+                <button>🔗 Share</button>
+                <button>💾 Save</button>
+            </div>
+
+            <div class="video-description">
+                <p>This is a hardcoded video description. It provides details about the video.</p>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments">
+                <h2>Comments (5)</h2>
+                <div class="comment">
+                    <img src="assets/user-avatar.png" alt="User">
+                    <div>
+                        <h4>John Doe <span>1 hour ago</span></h4>
+                        <p>Great video! Learned a lot.</p>
+                        <button>Reply</button>
+                    </div>
+                </div>
+                <div class="comment">
+                    <img src="assets/user-avatar.png" alt="User">
+                    <div>
+                        <h4>Jane Smith <span>3 hours ago</span></h4>
+                        <p>Amazing content, keep it up!</p>
+                        <button>Reply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar (Recommended Videos) -->
+        <aside class="sidebar">
+            <h2>Recommended Videos</h2>
+            <a href="?v=js8EY7gULJW">
+                <img src="assets/thumbnail1.jpg" alt="Video">
+                <div>
+                    <p>Recommended Video 1</p>
+                    <span>500K views • 1 week ago</span>
+                </div>
+            </a>
+            <a href="?v=W0Y4iAjLX0O">
+                <img src="assets/thumbnail2.jpg" alt="Video">
+                <div>
+                    <p>Recommended Video 2</p>
+                    <span>1M views • 2 days ago</span>
+                </div>
+            </a>
+        </aside>
+    </main>
+
+
     <script src="https://cdn.plyr.io/3.6.12/plyr.polyfilled.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-    <script>
+
+    <script src="script.js"></script>
+    <!-- <script>
 
         const Load = async () => {
             const videoListContainer = document.getElementById("video-list");
@@ -141,7 +210,7 @@
                 });
             }
         }
-    </script>
+    </script> -->
 </body>
 
 </html>

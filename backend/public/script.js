@@ -1,0 +1,125 @@
+const Load = async () => {
+    const videoListContainer = document.getElementById("video-list");
+
+    try {
+        // Fetch video list from the server
+        const response = await fetch("http://localhost:3000/watch/");
+        // console.log(response.json())
+        const videos = await response.json();
+        console.log(videos.files)
+        if (videos.files.length === 0) {
+            videoListContainer.innerHTML = "<p>No videos found.</p>";
+            return;
+        }
+
+        // Create and append video links dynamically
+        videos.files.forEach(video => {
+            const videoLink = document.createElement("a");
+            videoLink.href = `/view?v=${video.videoid}`;
+            videoLink.textContent = video.title;
+            videoLink.style.display = "block"; // New line for each video
+            videoListContainer.appendChild(videoLink);
+        });
+
+    } catch (error) {
+        console.error("Error fetching videos:", error);
+        videoListContainer.innerHTML = "<p>Error loading videos.</p>";
+    }
+
+
+
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    Load();
+    const video = document.getElementById('player');
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('v');
+
+    if (!videoId) {
+        console.error('No video ID found in the URL');
+        return;
+    }
+
+    console.log(`Video ID: ${videoId}`);
+
+    // Construct the correct video source URL
+    const source = `http://localhost:3000/watch/${videoId}/master.m3u8`;
+
+    const defaultOptions = {
+        controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+        quality: {
+            default: 0, // Auto quality
+            options: [],
+            forced: true,
+            onChange: (e) => updateQuality(e)
+        },
+        i18n: {
+            qualityLabel: {
+                0: "Auto"
+            }
+        },
+        previewThumbnails: {
+            enabled: true, // Enable hover preview thumbnails
+            src: `http://localhost:3000/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
+        }
+    };
+
+    if (Hls.isSupported()) {
+        const hls = new Hls({
+            maxBufferLength: 15,
+            maxMaxBufferLength: 15,
+            maxBufferSize: 60 * 1000 * 1000, // 60MB
+            maxBufferHole: 2,
+            startLevel: -1,
+            autoStartLoad: true,
+        });
+
+        hls.loadSource(source);
+        hls.attachMedia(video);
+        window.hls = hls;
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            const availableQuality = hls.levels.map((l) => l.height);
+            availableQuality.unshift(0); // Add auto option
+            defaultOptions.quality.options = availableQuality;
+            new Plyr(video, defaultOptions);
+        });
+
+        hls.on(Hls.Events.ERROR, function (event, data) {
+            if (data.fatal) {
+                switch (data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        console.error('Fatal network error encountered, trying to recover...');
+                        hls.startLoad();
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.error('Fatal media error encountered, trying to recover...');
+                        hls.recoverMediaError();
+                        break;
+                    default:
+                        hls.destroy();
+                        break;
+                }
+            }
+        });
+
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = source;
+        video.addEventListener('loadedmetadata', () => {
+            new Plyr(video, defaultOptions);
+        });
+    }
+});
+
+function updateQuality(newQuality) {
+    if (newQuality === 'auto') {
+        window.hls.currentLevel = -1; // Enable auto quality
+    } else {
+        window.hls.levels.forEach((level, levelIndex) => {
+            if (level.height === newQuality) {
+                window.hls.currentLevel = levelIndex;
+            }
+        });
+    }
+}
