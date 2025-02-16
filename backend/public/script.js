@@ -3,7 +3,7 @@ const Load = async () => {
 
     try {
         // Fetch video list from the server
-        const response = await fetch("http://localhost:3000/watch/");
+        const response = await fetch("/watch/");
         // console.log(response.json())
         const videos = await response.json();
         console.log(videos.files)
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`Video ID: ${videoId}`);
 
     // Construct the correct video source URL
-    const source = `http://localhost:3000/watch/${videoId}/master.m3u8`;
+    const source = `/watch/${videoId}/master.m3u8`;
 
     const defaultOptions = {
         controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         previewThumbnails: {
             enabled: true, // Enable hover preview thumbnails
-            src: `http://localhost:3000/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
+            src: `/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
         }
     };
 
