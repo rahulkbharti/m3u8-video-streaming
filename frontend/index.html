@@ -158,8 +158,8 @@
         With Seamless Search and Personalized Picks.
       </h2>
       <div class="search-bar">
-        <input type="text" placeholder="Search..." />
-        <button type="button">SEARCH</button>
+        <input type="search" placeholder="Search..." />
+        <button type="button" onclick="searchVideo(searchBox.value)">SEARCH</button>
       </div>
       <div class="categories">
         <button>Popular Show</button>
@@ -173,10 +173,10 @@
         <button>Animal Planet</button>
       </div>
     </div>
-    <section class="movies">
-      <h3>Titles related to: Horror</h3>
-      <div class="movie-list">
-        <div class="movie">
+    <section class="movies" >
+      <h3 id="title-value"></h3>
+      <div class="movie-list" id="search-list">
+        <!-- <div class="movie">
           <a href="./player.html">
             <img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie 1" />
           </a>
@@ -210,7 +210,7 @@
           <a href="#changes">
             <img src="./movie/The-Electric-State-2025.jpg" alt="Movie 7" />
           </a>
-        </div>
+        </div> -->
       </div>
     </section>
     <section class="movies">
@@ -268,7 +268,35 @@
     </ul>
   </footer>
   <script>
-
+    const searchBox = document.querySelector(".search-bar input");
+    const searchVideo = (title)=>{
+      const searchList = document.getElementById("search-list");
+      document.getElementById("title-value").textContent = "Titles related to: "+title;
+ 
+      fetch(`http://localhost:3000/find/${title}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        if(data.length === 0){
+          searchList.innerHTML = "<p>No videos found.</p>";
+          return;
+        }
+        searchList.innerHTML = "";
+        data.forEach(video => {
+          searchList.innerHTML += `<div class="movie">
+          <a href="./player.html?v=${video.videoId}">
+            <img
+              src="./movie/1923-Season-1-English-Web-Series.jpg"
+              alt="Movie 1"
+            />
+          </a>
+          </div>`
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching videos:", error);
+      });
+    }
     window.onload = async () => {
       const videoListContainer = document.getElementById("video-list");
       try {
@@ -305,7 +333,7 @@
       }
     }
 
-    const searchBox = document.querySelector(".search-bar input");
+    
     let typingTimeout; // Variable to store typing timeout
     function startTyping() {
       if (!typingTimeout) {
@@ -319,6 +347,7 @@
       typingTimeout = setTimeout(() => {
         //   dataChannel.send(JSON.stringify({ type: "typing", isTyping: false }));
         console.log("Stopped typing...");
+        searchVideo(searchBox.value);
         typingTimeout = null;
       }, 1000); // Adjust the delay as needed
     }
