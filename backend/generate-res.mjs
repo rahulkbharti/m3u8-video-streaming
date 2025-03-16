@@ -70,6 +70,26 @@ ${path.join(res.name, `playlist-${res.name}.m3u8`)}`
     console.log('🎬 Master M3U8 created successfully!');
 };
 
+const generatePosterThumbnail = (filePath, outputPath) => {
+    return new Promise((resolve, reject) => {
+        ffmpeg(filePath)
+            .on('end', () => {
+                console.log('📸 Poster thumbnail created in', outputPath);
+                resolve();
+            })
+            .on('error', (err) => {
+                console.error('❌ Error generating poster thumbnail:', err);
+                reject(err);
+            })
+            .screenshots({
+                timestamps: ['5%'], // Capture a frame at 5% of the video duration
+                filename: 'poster.png', // Save as poster.png
+                folder: outputPath, // Save in the same folder as the .m3u8 files
+                size: '640x360' // Adjust thumbnail size as needed
+            });
+    });
+};
+
 // Generate video thumbnails matching .ts segment count
 const generateThumbnails = async (filePath, thumbnailPath, segmentPath) => {
     return new Promise((resolve, reject) => {
@@ -169,7 +189,8 @@ const processVideo = async (filePath, onProgress) => {
         const thumbnailPath = path.join(baseOutputPath, 'thumbnails');
         createDirectories(thumbnailPath);
         await generateThumbnails(resolvedPath, thumbnailPath, firstResolutionPath);
-
+        // Generate poster thumbnail
+        await generatePosterThumbnail(resolvedPath, baseOutputPath);
         const vttFilePath = path.join(baseOutputPath, 'thumbnails.vtt');
         createVTTFile(thumbnailPath, vttFilePath);
 

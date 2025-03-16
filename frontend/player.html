@@ -142,8 +142,8 @@
     <main class="container">
         <div class="hero">
             <video id="player" controls autoplay width="100%"></video>
-            <h2 >HARRY POTTER AND THE PHILOSOPHER'S STONE</h2>
-            <p>Harry Potter, an eleven-year-old orphan, discovers that he is a wizard and is invited to study at Hogwarts...</p>
+            <h2 id="video-title">HARRY POTTER AND THE PHILOSOPHER'S STONE</h2>
+            <p id="video-desc">Harry Potter, an eleven-year-old orphan, discovers that he is a wizard and is invited to study at Hogwarts...</p>
            
             <div class="buttons">
                 <!-- <button type="button" class="button">▶ Play</button> -->
@@ -165,7 +165,7 @@
         
         <section class="section">
             <h3>Trending Now</h3>
-            <div class="movie-list">
+            <div class="movie-list" id="trending">
             <div class="movie"><a href="#"><img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie"></a></div>
             <div class="movie"><a href="#"><img src="./movie/Download-Smile-to-Life.jpg" alt="Movie"></a></div>
             <div class="movie"><a href="#"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Movie"></a></div>
@@ -228,7 +228,12 @@
             }
 
             console.log(`Video ID: ${videoId}`);
-
+            fetch(`http://localhost:3000/watch/${videoId}`).then(e => e.json()).then(e => {
+                 const videoTitle = document.getElementById('video-title');
+                 const videoDesc = document.getElementById('video-desc');
+                 videoTitle.textContent = e.file.title;
+                 videoDesc.textContent = e.file.description;
+            });
             // Construct the correct video source URL
             // const source = `https://manifest.prod.boltdns.net/manifest/v1/hls/v4/aes128/3588749423001/90c37f9c-9377-4761-9c68-2d8c0fa3cc4d/d6d3d70f-4fca-425e-bbb0-a2cbeed01817/10s/rendition.m3u8?fastly_token=NjdkNzA2MmNfNDAwYjQ1ZDNmMzBiNjEyYjYyNzY2Mzc3MDI2OTBmOWQzOGQwZTI0ZmMzOWIwMzgwYzgwNmRkNDgyNzNkZDkyMg%3D%3D`;
             const source = `http://localhost:3000/watch/${videoId}/master.m3u8`;

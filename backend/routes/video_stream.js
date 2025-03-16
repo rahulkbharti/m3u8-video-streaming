@@ -21,7 +21,22 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
+router.get("/:videoId", async (req, res) => {
+    try {
+        const file = await fileModel.getVideoByVideoId(req.params.videoId);
+        console.log(req.params.videoId);
+        console.log(file);
+        // Convert BigInt values to string before sending JSON response
+        const processedFile = Object.fromEntries(Object.entries(file).map(([key, value]) =>
+            [key, typeof value === "bigint" ? value.toString() : value]
+        ));
 
+        res.json({ file: file });
+    } catch (err) {
+        console.log("Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 router.get('/:videoId/master.m3u8', (req, res) => {
     res.sendFile(path.resolve(`streams/${req.params.videoId}/master.m3u8`));
 });

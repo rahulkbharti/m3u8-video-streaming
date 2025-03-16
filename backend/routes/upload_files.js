@@ -27,15 +27,19 @@ router.post('/upload', upload.single('video'), async (req, res) => {
     const file = req.file;
     if (!file) return res.status(400).send('Please upload a file');
 
-    const { title, description } = req.body;
-    let result = await fileModel.uploadFile(file.filename.split('.')[0], title, description, 0);
-
-    console.log(result);
     try {
       await processVideo(`./uploads/${file.filename}`, (resolution, percent) => {
         console.log(`Processing ${resolution}: ${percent}% complete`);
       });
       console.log('Video processing completed!');
+      
+      // Add To Database
+      const { title, description } = req.body;
+      let result = await fileModel.uploadFile(file.filename.split('.')[0], title, description, 0);
+  
+      console.log(result);
+
+      // After Uploading Delete the .mp4 file
       fs.unlink(file.path, (err) => {
         if (err) console.error('Error deleting file:', err);
         else console.log('File deleted successfully');

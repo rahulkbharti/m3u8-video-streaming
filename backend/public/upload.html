@@ -5,24 +5,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .upload-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .upload-container input[type="file"],
+        .upload-container input[type="text"],
+        .upload-container textarea {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .upload-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .upload-container button:hover {
+            background-color: #218838;
+        }
+
+        .upload-container progress {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .upload-container p {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
     <h2>Upload Video</h2>
-    <input type="file" id="fileInput" accept="video/*">
-    <input type="text" id="title" placeholder="Enter title">
-    <input type="text" id="description" placeholder="Enter description">
-    <button id="uploadButton">Upload</button>
 
-    <progress id="progressBar" value="0" max="100"></progress>
-    <p id="progressPercentage">0%</p>
+
+    <div class="upload-container">
+        <label for="fileInput">File:</label>
+        <input type="file" id="fileInput" accept="video/*"> <br>
+        <label for="title">Title:</label>
+        <input type="text" id="title" placeholder="Enter title"><br>
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" placeholder="Enter description"></textarea>
+        <button id="uploadButton">Upload</button>
+
+        <progress id="progressBar" value="0" max="100"></progress>
+        <p id="progressPercentage">0%</p>
+    </div>
 
     <script>
+
+        const fileInput = document.getElementById('fileInput');
+        let title = document.getElementById('title');
+        let description = document.getElementById('description');
+        let file;
+        fileInput.addEventListener('change', () => {
+            file = fileInput.files[0];
+            title.value = file.name.replace(/\.[^/.]+$/, '');
+            console.log(file)
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+        });
         document.getElementById('uploadButton').addEventListener('click', async () => {
-            const fileInput = document.getElementById('fileInput');
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const file = fileInput.files[0];
+
+            // const file = fileInput.files[0];
 
             if (!file) {
                 alert('Please select a file.');
@@ -31,8 +104,8 @@
 
             const formData = new FormData();
             formData.append('video', file); // Append file
-            formData.append('title', title); // Append text field
-            formData.append('description', description); // Append another text field
+            formData.append('title', title.value); // Append text field
+            formData.append('description', description.value); // Append another text field
 
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/files/upload', true);

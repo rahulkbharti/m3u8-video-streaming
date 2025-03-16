@@ -33,7 +33,7 @@
                 // Create and append video links dynamically
                 videos.files.forEach(video => {
                     const videoLink = document.createElement("a");
-                    videoLink.href = `/view?v=${video.videoid}`;
+                    videoLink.href = `/view?v=${video.videoId}`;
                     videoLink.textContent = video.title;
                     videoLink.style.display = "block"; // New line for each video
                     videoListContainer.appendChild(videoLink);

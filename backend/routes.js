@@ -9,5 +9,8 @@ router.use("/watch", VideoStream);
 router.get('/view', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public/index.html'));
 });
+// router.get('/find/:title', (req, res) => {
+//     res.send('Welcome to the Video Streaming API');
+// });
 export { router as MainRoutes };
 

@@ -19,6 +19,7 @@ class FileModel {
         description,
         duration,
         createdAt: new Date(),
+
       });
       return result;
     } catch (error) {
@@ -38,9 +39,27 @@ class FileModel {
 
   async getVideoByVideoId(videoId) {
     try {
-      return await this.collection.findOne({ videoId });
+      const result = await this.database.collection('videos').findOne(
+        { videoId },
+        // { projection: { videoId: 1, _id: 0 } } // Only return videoId, exclude _id
+      );
+      return result ? result : null; // Return videoId if found, else null
     } catch (error) {
-      console.log(chalk.red('Database Error:', error));
+      console.log(chalk.red('Database Error: ', error));
+      return error;
+    }
+
+  }
+
+  // Search videos by title
+  async searchVideosByTitle(title) {
+    try {
+      const result = await this.database.collection('videos').find({
+        title: { $regex: title, $options: 'i' } // Case-insensitive search
+      }).toArray();
+      return result; // Return matching videos
+    } catch (error) {
+      console.log(chalk.red('Database Error: ', error));
       return error;
     }
   }
