@@ -17,7 +17,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-app:latest .
+          docker build -t m3u8-backend:latest ./backend
 
   test:
     name: Run Tests
@@ -29,10 +29,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          cd backend
+          npm install
 
       - name: Run Tests
-        run: npm test
+        run: |
+          cd backend
+          npm test
 
   deploy:
     name: Deploy to Render
@@ -49,8 +53,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/m3u8-backend-server:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/m3u8-backend-server:latest ./backend
+          docker push ${{ secrets.DOCKER_USERNAME }}/m3u8-backend-server:latest
 
       - name: Trigger Render Deployment
         run: |
