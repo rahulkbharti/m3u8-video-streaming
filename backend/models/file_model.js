@@ -1,46 +1,49 @@
 import chalk from 'chalk';
+import { connectDB } from '../config/db.js';
 
 class FileModel {
-  constructor(database) {
-    this.database = database;
+  constructor() {
+    this.init();
   }
 
-  // Upload a video file to the database
+  async init() {
+    this.database = await connectDB();
+    this.collection = this.database.collection('videos');
+  }
+
   async uploadFile(videoId, title, description, duration) {
-    const query = `INSERT INTO videos (videoId, title, description, duration) 
-                   VALUES ($1, $2, $3, $4) RETURNING *`;
     try {
-      const result = await this.database.query(query, [videoId, title, description, duration]);
-      return result.rows[0]; // Return the inserted video data
+      const result = await this.collection.insertOne({
+        videoId,
+        title,
+        description,
+        duration,
+        createdAt: new Date(),
+      });
+      return result;
     } catch (error) {
-      console.log(chalk.red('Database Error: ', error));
+      console.log(chalk.red('Database Error:', error));
       return error;
     }
   }
 
-  // Get all videos
   async getAllVideos() {
-    const query = "SELECT * FROM videos";
     try {
-      const result = await this.database.query(query);
-      return result.rows; // Return all videos
+      return await this.collection.find({}).toArray();
     } catch (error) {
-      console.log(chalk.red('Database Error: ', error));
+      console.log(chalk.red('Database Error:', error));
       return error;
     }
   }
 
-  // Get a specific video by videoId
   async getVideoByVideoId(videoId) {
-    const query = "SELECT * FROM videos WHERE videoId = $1";
     try {
-      const result = await this.database.query(query, [videoId]);
-      return result.rows[0] || null; // Return video if found, else null
+      return await this.collection.findOne({ videoId });
     } catch (error) {
-      console.log(chalk.red('Database Error: ', error));
+      console.log(chalk.red('Database Error:', error));
       return error;
     }
   }
 }
 
-export default FileModel;
+export default new FileModel();

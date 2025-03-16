@@ -1,17 +1,12 @@
 import path from 'path';
 import express from 'express';
-import DB from '../config/db.js';
-import FileModel from '../models/file_model.js';
+import fileModel from '../models/file_model.js';
+
 const router = express.Router();
-const fileModel = new FileModel(DB);
-/**
- * This route will return an .m3u8 file with all video file segments info
- * If you don't have any files in /segments folder -> run "generate.mjs" file:
- * it will create a m3u8 list with segmented videos.
- */
-router.get("/", async (req, res) => { // Added req parameter & made it async
+
+router.get("/", async (req, res) => { 
     try {
-        const files = await fileModel.getAllVideos(); // Await the DB query
+        const files = await fileModel.getAllVideos();
 
         // Convert BigInt values to string before sending JSON response
         const processedFiles = files.map(file =>
@@ -20,47 +15,31 @@ router.get("/", async (req, res) => { // Added req parameter & made it async
             ))
         );
 
-        // console.log(processedFiles);
-        res.json({ files: processedFiles }); // Send JSON response
-
+        res.json({ files: processedFiles });
     } catch (err) {
         console.log("Error:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
-router.get('/:videoId/master.m3u8', (request, response) => {
-    const { videoId } = request.params;
-    const resolvedPath = path.resolve(`streams/${videoId}/master.m3u8`);
-    response.sendFile(resolvedPath);
-});
-router.get('/:videoId/thumbnails.vtt', (request, response) => {
-    const { videoId } = request.params;
-    const resolvedPath = path.resolve(`streams/${videoId}/thumbnails.vtt`);
-    response.sendFile(resolvedPath);
+router.get('/:videoId/master.m3u8', (req, res) => {
+    res.sendFile(path.resolve(`streams/${req.params.videoId}/master.m3u8`));
 });
 
-router.get('/:videoId/thumbnails/:thumbnail', (request, response) => {
-    const { videoId, thumbnail } = request.params;
-    const resolvedPath = path.resolve(`streams/${videoId}/thumbnails/${thumbnail}`);
-    response.sendFile(resolvedPath);
-});
-router.get('/:videoId/:resolution/playlist.m3u8', (request, response) => {
-    const { videoId, resolution } = request.params;
-    const resolvedPath = path.resolve(`streams/${videoId}/${resolution}/output.m3u8`);
-    response.sendFile(resolvedPath);
+router.get('/:videoId/thumbnails.vtt', (req, res) => {
+    res.sendFile(path.resolve(`streams/${req.params.videoId}/thumbnails.vtt`));
 });
 
-/**
- * Will return specific video segment, like "file149.ts" from the /videos folder
- */
-router.get('/:videoId/:resolution/:segment', (request, response) => {
-    const { videoId, resolution, segment } = request.params;
-    const resolvedPath = path.resolve(`streams/${videoId}/${resolution}/${segment}`);
-    response.sendFile(resolvedPath);
+router.get('/:videoId/thumbnails/:thumbnail', (req, res) => {
+    res.sendFile(path.resolve(`streams/${req.params.videoId}/thumbnails/${req.params.thumbnail}`));
 });
 
+router.get('/:videoId/:resolution/playlist.m3u8', (req, res) => {
+    res.sendFile(path.resolve(`streams/${req.params.videoId}/${req.params.resolution}/output.m3u8`));
+});
 
-
+router.get('/:videoId/:resolution/:segment', (req, res) => {
+    res.sendFile(path.resolve(`streams/${req.params.videoId}/${req.params.resolution}/${req.params.segment}`));
+});
 
 export { router as VideoStream };

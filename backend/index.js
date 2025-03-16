@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin || ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:3306'].includes(origin)) {
+        if (!origin || ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500'].includes(origin)) {
             callback(null, true);
         } else {
             console.log(chalk.bgRed(`Request from origin ${origin} blocked by CORS`));
