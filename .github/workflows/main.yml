@@ -49,7 +49,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/m3u8-backend-server:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
 
       - name: Trigger Render Deployment
