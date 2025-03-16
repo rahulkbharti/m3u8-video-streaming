@@ -48,5 +48,5 @@ app.get('/', function (req, res) {
 app.use("/", MainRoutes);
 // Start the server
 app.listen(PORT, () => {
-    console.log(chalk.green('Server listening on PORT'), chalk.cyan(PORT));
+    console.log(chalk.blue(`Server is running on http://localhost:${PORT}`));
 });
