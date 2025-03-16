@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Stream</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            text-align: center;
+        }
+        h1{
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            /* background: #111; */
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding: 0;
+        }
+        .hero {
+            padding: 20px 20px;
+            background: url('hogwarts.jpg') no-repeat center center/cover;
+            text-align: left;
+        }
+        .hero h2 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 24px 0 0 0;
+            padding: 0;
+        }
+        .hero p {
+            margin: 8px 0 24px 0;
+            padding: 0;
+            max-width: 600px;
+        }
+        .hero .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .hero button {
+            padding: 10px 20px;
+            border: none;
+            background: #444;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .section {
+            padding: 20px;
+            text-align: left;
+        }
+        .movie-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0;
+        }
+        .movie img {
+            width: 150px;
+            height: 220px;
+            border-radius: 10px;
+        }
+        .top-10 {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+        }
+        .top-10 .movie {
+            position: relative;
+        }
+        .top-10 .movie::before {
+            content: attr(data-rank);
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        footer {
+            padding: 20px;
+            background: #111;
+            margin-top: 30px;
+        }
+        footer ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 0;
+        }
+        .container{
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VIDEO STREAM</h1>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Movies</li>
+                <li>Series</li>
+                <li>TV Shows</li>
+                <li>Browse By Language</li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+
+        <div class="hero">
+            <img src="./movie/play.png" alt="">
+            <h2 >HARRY POTTER AND THE PHILOSOPHER'S STONE</h2>
+            <p>Harry Potter, an eleven-year-old orphan, discovers that he is a wizard and is invited to study at Hogwarts...</p>
+           
+            <div class="buttons">
+                <button>▶ Play</button>
+                <button>More Info</button>
+            </div>
+        </div>
+        
+        <section class="section">
+            <h3>Trending Now</h3>
+            <div class="movie-list">
+                <div class="movie"><img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie"></div>
+                <div class="movie"><img src="./movie/Download-Smile-to-Life.jpg" alt="Movie"></div>
+                <div class="movie"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Movie"></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Because You Watch "The Abyss"</h3>
+            <div class="movie-list">
+                <div class="movie"><img src="./movie/Rurouni-Kenshin.jpg" alt="Movie"></div>
+                <div class="movie"><img src="./movie/Solo-Leveling-Anime.jpg" alt="Movie"></div>
+                <div class="movie"><img src="./movie/The-Apothecary-Diaries.jpg" alt="Movie"></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Continue Watching</h3>
+            <div class="movie-list">
+                <div class="movie"><img src="./movie/The-Electric-State-2025.jpg" alt="Movie"></div>
+                <div class="movie"><img src="./movie/Download-Ameku-M-D-Doctor-Detective.jpg" alt="Movie"></div>
+                <div class="movie"><img src="./movie/Download-Nina-the-Starry-Bride.jpg" alt="Movie"></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Top 10 TV Shows Today</h3>
+            <div class="top-10">
+                <div class="movie" data-rank="1"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Show"></div>
+                <div class="movie" data-rank="2"><img src="./movie/Download-Nina-the-Starry-Bride.jpg" alt="Show"></div>
+                <div class="movie" data-rank="3"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Show"></div>
+                <div class="movie" data-rank="4"><img src="./movie/Solo-Leveling-Anime.jpg" alt="Show"></div>
+                <div class="movie" data-rank="5"><img src="./movie/Solo-Leveling-Anime.jpg" alt="Show"></div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; Filmora Media Direct, LLC. All rights reserved</p>
+        <ul>
+            <li>Privacy</li>
+            <li>Terms</li>
+            <li>Help</li>
+            <li>Devices</li>
+            <li>Media Center</li>
+            <li>Gift Cards</li>
+            <li>Legacy Notices</li>
+            <li>Account</li>
+        </ul>
+    </footer>
+</body>
+</html>

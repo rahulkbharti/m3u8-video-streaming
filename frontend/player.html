@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Stream</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.12/plyr.css" />
+    <style>
+       body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #000;
+        color: #fff;
+        text-align: center;
+        background: url("./img/background.jpg") no-repeat center center/cover;
+      }
+        h1{
+            margin: 0;
+            padding: 0;
+        }
+        header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        align-items: center;
+        /* background: #111; */
+      }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding: 0;
+        }
+        nav ul li a{
+        text-decoration: none;
+        color: #ccc;
+        &:hover{
+          color: #fff;
+        }   
+      }
+      .hero {
+            padding: 50px 20px;
+            /* background: url('./img/image.png') no-repeat center center/cover; */
+            text-align: left;
+            /* height: 500px; */
+        }
+        .hero h2 {
+            /* font-size: 2.5em; */
+            font-weight: bold;
+            margin: 24px 0 0 0;
+            padding: 0;
+        }
+        .hero p {
+            margin: 8px 0 24px 0;
+            padding: 0;
+            max-width: 600px;
+            color: #ccc;
+        }
+        .hero .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .hero .button {
+            padding: 10px 20px;
+            border: none;
+            background: #444;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .section {
+            padding: 20px;
+            text-align: left;
+        }
+        .movie-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0;
+        }
+        .movie img {
+            width: 150px;
+            height: 220px;
+            border-radius: 10px;
+        }
+        .top-10 {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+        }
+        .top-10 .movie {
+            position: relative;
+        }
+        .top-10 .movie::before {
+            content: attr(data-rank);
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            outline: 1px solid #fff;
+            width: 35px;
+            border-radius: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        footer {
+            padding: 20px;
+            background: #111;
+            margin-top: 30px;
+        }
+        footer ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 0;
+        }
+        .container{
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+     <script src="https://cdn.plyr.io/3.6.12/plyr.polyfilled.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+    <header>
+        <h1 style="font-size: 18px;">< VIDEO STREAM /> </h1>
+        <nav>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#">Movies</a></li>
+            <li><a href="#">Series</a></li>
+            <li><a href="#">TV Shows</a></li>
+            <li><a href="#">Browse By Language</a></li>
+          </ul>
+        </nav>
+    </header>
+    <main class="container">
+        <div class="hero">
+            <video id="player" controls autoplay width="100%"></video>
+            <h2 >HARRY POTTER AND THE PHILOSOPHER'S STONE</h2>
+            <p>Harry Potter, an eleven-year-old orphan, discovers that he is a wizard and is invited to study at Hogwarts...</p>
+           
+            <div class="buttons">
+                <!-- <button type="button" class="button">▶ Play</button> -->
+                <button type="button" class="button">More Info</button>
+                <!-- <details>
+                    <summary><button type="button" class="button">More Info</button></summary>
+                    <p>Director: Chris Columbus</p>
+                    <p>Writers: J.K. Rowling (novel), Steve Kloves (screenplay)</p>
+                    <p>Stars: Daniel Radcliffe, Rupert Grint, Richard Harris</p>
+                    <p>Genres: Adventure, Family, Fantasy</p>
+                    <p>Country: UK, USA</p>
+                    <p>Language: English</p>
+                    <p>Release Date: 10 November 2001</p>
+                    <p>Runtime: 152 min</p>
+                    <p>IMDb Rating: 7.6</p>
+                </details> -->
+            </div>
+        </div>
+        
+        <section class="section">
+            <h3>Trending Now</h3>
+            <div class="movie-list">
+            <div class="movie"><a href="#"><img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie"></a></div>
+            <div class="movie"><a href="#"><img src="./movie/Download-Smile-to-Life.jpg" alt="Movie"></a></div>
+            <div class="movie"><a href="#"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Movie"></a></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Because You Watch "The Abyss"</h3>
+            <div class="movie-list">
+            <div class="movie"><a href="#"><img src="./movie/Rurouni-Kenshin.jpg" alt="Movie"></a></div>
+            <div class="movie"><a href="#"><img src="./movie/Solo-Leveling-Anime.jpg" alt="Movie"></a></div>
+            <div class="movie"><a href="#"><img src="./movie/The-Apothecary-Diaries.jpg" alt="Movie"></a></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Continue Watching</h3>
+            <div class="movie-list">
+            <div class="movie"><a href="#"><img src="./movie/The-Electric-State-2025.jpg" alt="Movie"></a></div>
+            <div class="movie"><a href="#"><img src="./movie/Download-Ameku-M-D-Doctor-Detective.jpg" alt="Movie"></a></div>
+            <div class="movie"><a href="#"><img src="./movie/Download-Nina-the-Starry-Bride.jpg" alt="Movie"></a></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Top 10 TV Shows Today</h3>
+            <div class="top-10">
+            <div class="movie" data-rank="1"><a href="#"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Show"></a></div>
+            <div class="movie" data-rank="2"><a href="#"><img src="./movie/Download-Nina-the-Starry-Bride.jpg" alt="Show"></a></div>
+            <div class="movie" data-rank="3"><a href="#"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Show"></a></div>
+            <div class="movie" data-rank="4"><a href="#"><img src="./movie/Solo-Leveling-Anime.jpg" alt="Show"></a></div>
+            <div class="movie" data-rank="5"><a href="#"><img src="./movie/Solo-Leveling-Anime.jpg" alt="Show"></a></div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; Filmora Media Direct, LLC. All rights reserved</p>
+        <ul>
+            <li>Privacy</li>
+            <li>Terms</li>
+            <li>Help</li>
+            <li>Devices</li>
+            <li>Media Center</li>
+            <li>Gift Cards</li>
+            <li>Legacy Notices</li>
+            <li>Account</li>
+        </ul>
+    </footer>
+   
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('player');
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+
+            if (!videoId) {
+                console.error('No video ID found in the URL');
+                return;
+            }
+
+            console.log(`Video ID: ${videoId}`);
+
+            // Construct the correct video source URL
+            // const source = `https://manifest.prod.boltdns.net/manifest/v1/hls/v4/aes128/3588749423001/90c37f9c-9377-4761-9c68-2d8c0fa3cc4d/d6d3d70f-4fca-425e-bbb0-a2cbeed01817/10s/rendition.m3u8?fastly_token=NjdkNzA2MmNfNDAwYjQ1ZDNmMzBiNjEyYjYyNzY2Mzc3MDI2OTBmOWQzOGQwZTI0ZmMzOWIwMzgwYzgwNmRkNDgyNzNkZDkyMg%3D%3D`;
+            const source = `http://localhost:3000/watch/${videoId}/master.m3u8`;
+            const defaultOptions = {
+                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                quality: {
+                    default: 0, // Auto quality
+                    options: [],
+                    forced: true,
+                    onChange: (e) => updateQuality(e)
+                },
+                i18n: {
+                    qualityLabel: {
+                        0: "Auto"
+                    }
+                },
+                previewThumbnails: {
+                    enabled: true, // Enable hover preview thumbnails
+                    src: `http://localhost:3000/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
+                }
+            };
+
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    maxBufferLength: 15,
+                    maxMaxBufferLength: 15,
+                    maxBufferSize: 60 * 1000 * 1000, // 60MB
+                    maxBufferHole: 2,
+                    startLevel: -1,
+                    autoStartLoad: true,
+                });
+
+                hls.loadSource(source);
+                hls.attachMedia(video);
+                window.hls = hls;
+
+                hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                    const availableQuality = hls.levels.map((l) => l.height);
+                    availableQuality.unshift(0); // Add auto option
+                    defaultOptions.quality.options = availableQuality;
+                    new Plyr(video, defaultOptions);
+                });
+
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.error('Fatal network error encountered, trying to recover...');
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.error('Fatal media error encountered, trying to recover...');
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = source;
+                video.addEventListener('loadedmetadata', () => {
+                    new Plyr(video, defaultOptions);
+                });
+            }
+        });
+
+        function updateQuality(newQuality) {
+            if (newQuality === 'auto') {
+                window.hls.currentLevel = -1; // Enable auto quality
+            } else {
+                window.hls.levels.forEach((level, levelIndex) => {
+                    if (level.height === newQuality) {
+                        window.hls.currentLevel = levelIndex;
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
