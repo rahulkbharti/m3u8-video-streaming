@@ -280,6 +280,7 @@
     </ul>
   </footer>
   <script>
+    const baseURL = "https://m3u8-backend-server.onrender.com";
     const searchBox = document.querySelector(".search-bar input");
     const searchVideo = (title)=>{
       const searchList = document.getElementById("search-list");
@@ -287,7 +288,7 @@
       titleE.style.display = "block";
       titleE.textContent = "Titles related to: "+title;
  
-      fetch(`http://localhost:3000/find/${title}`)
+      fetch(`${baseURL}/find/${title}`)
       .then(response => response.json())
       .then(data => {
         console.log(data)
@@ -300,7 +301,7 @@
           searchList.innerHTML += `<div class="movie">
           <a href="./player.html?v=${video.videoId}">
             <img
-              src="http://localhost:3000/watch/${video.videoId}/poster"
+              src="${baseURL}/watch/${video.videoId}/poster"
               alt="${video.title}"
             />
           </a>
@@ -316,7 +317,7 @@
       const videoListContainer = document.getElementById("video-list");
       try {
         // Fetch video list from the server
-        const response = await fetch("http://localhost:3000/watch");
+        const response = await fetch(`${baseURL}/watch`);
         // console.log(response.json())
         const videos = await response.json();
         console.log(videos.files)
@@ -335,7 +336,7 @@
           videoListContainer.innerHTML += `<div class="movie">
         <a href="./player.html?v=${video.videoId}">
           <img
-            src="http://localhost:3000/watch/${video.videoId}/poster"
+            src="${baseURL}/watch/${video.videoId}/poster"
             alt="${video.title}"
           />
           <h4>${video.title}</h4>
