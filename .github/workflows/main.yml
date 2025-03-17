@@ -36,10 +36,11 @@ jobs:
           npm install
 
       - name: Run Tests
+        env:
+          MONGODB_URI: ${{ env.MONGODB_URI }}
+          MONGODB_DB_NAME: ${{ env.MONGODB_DB_NAME }}
         run: |
           cd backend
-          export MONGODB_URI=${{ env.MONGODB_URI }}
-          export MONGODB_DB_NAME=${{ env.MONGODB_DB_NAME }}
           npm test
 
   deploy:
