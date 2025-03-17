@@ -5,6 +5,8 @@ on:
 
 env:
   RENDER_SERVICE_ID: ${{ vars.RENDER_SERVICE_ID }}  # Using GitHub Environment Variable
+  MONGODB_URI: ${{ vars.MONGODB_URI }}  # Using GitHub Environment Variable
+  MONGODB_DB_NAME: ${{ vars.MONGODB_DB_NAME }}  # Using GitHub Environment Variable
 
 jobs:
   build:
@@ -36,6 +38,8 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
+          export MONGODB_URI=${{ env.MONGODB_URI }}
+          export MONGODB_DB_NAME=${{ env.MONGODB_DB_NAME }}
           npm test
 
   deploy:
