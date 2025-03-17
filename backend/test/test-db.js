@@ -11,6 +11,7 @@ async function testDBConnection() {
     console.log('Collections:', collections.map(c => c.name));
   } catch (error) {
     console.error('Test failed:', error);
+    process.exit(1); // 🔴 GitHub Actions will FAIL here
   } finally {
     await client.close();
     console.log('⚠️ MongoDB Connection Closed (Test Cleanup)');
