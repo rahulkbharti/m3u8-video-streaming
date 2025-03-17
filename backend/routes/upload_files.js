@@ -26,10 +26,23 @@ router.post('/upload', upload.single('video'), async (req, res) => {
   try {
     const file = req.file;
     if (!file) return res.status(400).send('Please upload a file');
-
+    
+    const io = req.io; // Get Socket.IO instance from the request
+    const socketId = req.headers['socket-id']; // Get client's socket ID
+    const socket = io.sockets.sockets.get(socketId);
+    // console.log('Socket ID:', socketId);
+    // console.log('Socket:', socket);
+    // console.log('io:', io);
+    if (!socket) {
+      console.error('Socket not found');
+      return res.status(400).send('Socket not found');
+    }
     try {
-      await processVideo(`./uploads/${file.filename}`, (resolution, percent) => {
-        console.log(`Processing ${resolution}: ${percent}% complete`);
+      await processVideo(`./uploads/${file.filename}`, (resolution, percent,applicableResolutions) => {
+        console.log(`Processing ${resolution}: ${percent}% complete (${JSON.stringify(applicableResolutions)})`);
+        if (socket) {
+          socket.emit('processing-progress', { resolution, percent, applicableResolutions: JSON.stringify(applicableResolutions) });
+        }
       });
       console.log('Video processing completed!');
       

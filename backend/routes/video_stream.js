@@ -37,6 +37,9 @@ router.get("/:videoId", async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
+router.get("/:videoId/poster", (req, res) => {
+    res.sendFile(path.resolve(`streams/${req.params.videoId}/poster.png`));
+});
 router.get('/:videoId/master.m3u8', (req, res) => {
     res.sendFile(path.resolve(`streams/${req.params.videoId}/master.m3u8`));
 });

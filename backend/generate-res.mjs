@@ -34,7 +34,7 @@ const countTsSegments = (resolutionPath) => {
 };
 
 // Process video at a specific resolution
-const processResolution = (filePath, resolutionPath, resolution, onProgress) => {
+const processResolution = (filePath, resolutionPath, resolution, onProgress,applicableResolutions) => {
     return new Promise((resolve, reject) => {
         ffmpeg(filePath, { timeout: 432000 })
             .videoCodec('libx264')
@@ -50,7 +50,7 @@ const processResolution = (filePath, resolutionPath, resolution, onProgress) => 
             ])
             .output(path.join(resolutionPath, `playlist-${resolution.name}.m3u8`))
             .on('end', () => resolve(console.log(`✅ Transcoding completed: ${resolution.name}`)))
-            .on('progress', (progress) => onProgress?.(resolution.name, progress.percent))
+            .on('progress', (progress) => onProgress?.(resolution.name, progress.percent,applicableResolutions))
             .on('error', (err) => reject(console.error(`❌ Error processing ${resolution.name}:`, err)))
             .run();
     });
@@ -167,7 +167,7 @@ const processVideo = async (filePath, onProgress) => {
         const applicableResolutions = [
             // { name: '1080p', width: 1920, height: 1080 },
             // { name: '720p', width: 1280, height: 720 },
-            // { name: '480p', width: 854, height: 480 },
+            { name: '480p', width: 854, height: 480 },
             { name: '360p', width: 640, height: 360 },
         ].filter(res => res.width <= width && res.height <= height);
 
@@ -181,7 +181,7 @@ const processVideo = async (filePath, onProgress) => {
         await Promise.all(applicableResolutions.map(async (res) => {
             const resolutionPath = path.join(baseOutputPath, res.name);
             createDirectories(resolutionPath);
-            await processResolution(resolvedPath, resolutionPath, res, onProgress);
+            await processResolution(resolvedPath, resolutionPath, res, onProgress,applicableResolutions);
         }));
 
         // Generate thumbnails based on first resolution's .ts files

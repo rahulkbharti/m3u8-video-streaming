@@ -3,11 +3,15 @@ import cors from 'cors';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import { Server } from 'socket.io';
+import http from 'http';
+
 import { MainRoutes } from './routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
 // Use CORS middleware
 app.use(cors({
     origin: function (origin, callback) {
@@ -44,9 +48,13 @@ app.use(express.static('public'));
 app.get('/', function (req, res) {
     res.send("Wellcome ");
 });
-
+// Middleware to attach `io` to `req`
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+  });
 app.use("/", MainRoutes);
 // Start the server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(chalk.blue(`Server is running on http://localhost:${PORT}`));
 });
