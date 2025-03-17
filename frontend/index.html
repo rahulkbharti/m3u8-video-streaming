@@ -112,17 +112,21 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 15px;
-    } 
-    .movie{
+    }
+
+    .movie {
       width: 220px;
     }
-    .movie h4{
+
+    .movie h4 {
       color: #fff;
     }
+
     .movie a {
       text-decoration: none;
       color: #fff;
     }
+
     .movie img {
       width: 220px;
       height: 150px;
@@ -142,8 +146,71 @@
       gap: 15px;
       padding: 0;
     }
-    #title-value{
+
+    #title-value {
       display: none;
+    }
+
+    @media screen and (max-width: 500px) {
+      header {
+        height: 50px;
+      }
+
+      .hero h2 {
+        font-size: 2em;
+      }
+
+      .search-bar input {
+        width: 80%;
+      }
+
+      .categories button {
+        padding: 10px 10px;
+      }
+
+      .movie {
+        width: 100%;
+      }
+
+      .movie img {
+        width: 100%;
+      }
+
+      nav {
+        display: none;
+      }
+
+      footer ul {
+        overflow-x: scroll;
+        max-width: 100%;
+        padding: 0;
+      }
+      .movie img {
+        height: auto;
+       }
+    }
+
+    /* WebKit Scrollbar (Chrome, Edge, Safari) */
+    ::-webkit-scrollbar {
+      height: 8px;
+      /* Horizontal scrollbar thickness */
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      /* Track color */
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      /* Thumb color */
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+      /* Thumb color on hover */
     }
   </style>
 </head>
@@ -174,18 +241,18 @@
         <button type="button" onclick="searchVideo(searchBox.value)">SEARCH</button>
       </div>
       <div class="categories">
-        <button>Popular Show</button>
-        <button>Horror</button>
-        <button>Sci-Fi</button>
-        <button>Cartoon Network</button>
-        <button>Comedy</button>
-        <button>Crime</button>
-        <button>Action</button>
-        <button>Documentary</button>
-        <button>Animal Planet</button>
+        <button onclick="filterCategory(this.innerText)">Popular Show</button>
+        <button onclick="filterCategory(this.innerText)">Horror</button>
+        <button onclick="filterCategory(this.innerText)">Sci-Fi</button>
+        <button onclick="filterCategory(this.innerText)">Cartoon Network</button>
+        <button onclick="filterCategory(this.innerText)">Comedy</button>
+        <button onclick="filterCategory(this.innerText)">Crime</button>
+        <button onclick="filterCategory(this.innerText)">Action</button>
+        <button onclick="filterCategory(this.innerText)">Documentary</button>
+        <button onclick="filterCategory(this.innerText)">Animal Planet</button>
       </div>
     </div>
-    <section class="movies" >
+    <section class="movies">
       <h3 id="title-value"></h3>
       <div class="movie-list" id="search-list">
         <!-- <div class="movie">
@@ -267,7 +334,9 @@
     </section>
   </main>
   <footer>
-    <p>&copy;< Video Stream />. All rights reserved</p>
+    <p>&copy;
+      < Video Stream />. All rights reserved
+    </p>
     <ul>
       <li>Privacy</li>
       <li>Terms</li>
@@ -280,25 +349,28 @@
     </ul>
   </footer>
   <script>
+
+    
     const baseURL = "https://m3u8-backend-server.onrender.com";
     const searchBox = document.querySelector(".search-bar input");
-    const searchVideo = (title)=>{
+
+    const searchVideo = (title) => {
       const searchList = document.getElementById("search-list");
       const titleE = document.getElementById("title-value");
       titleE.style.display = "block";
-      titleE.textContent = "Titles related to: "+title;
- 
+      titleE.textContent = "Titles related to: " + title;
+
       fetch(`${baseURL}/find/${title}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        if(data.length === 0){
-          searchList.innerHTML = "<p>No videos found.</p>";
-          return;
-        }
-        searchList.innerHTML = "";
-        data.forEach(video => {
-          searchList.innerHTML += `<div class="movie">
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          if (data.length === 0) {
+            searchList.innerHTML = "<p>No videos found.</p>";
+            return;
+          }
+          searchList.innerHTML = "";
+          data.forEach(video => {
+            searchList.innerHTML += `<div class="movie">
           <a href="./player.html?v=${video.videoId}">
             <img
               src="${baseURL}/watch/${video.videoId}/poster"
@@ -306,13 +378,23 @@
             />
           </a>
           </div>`
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching videos:", error);
+          titleE.style.display = "block";
         });
-      })
-      .catch(error => {
-        console.error("Error fetching videos:", error);
-        titleE.style.display = "block";
-      });
     }
+    
+    
+    const filterCategory = (category) => {
+      const titleE = document.getElementById("title-value");
+      titleE.style.display = "block";
+      titleE.textContent = "Category: " + category;
+      searchBox.value = category;
+      searchVideo(category);
+    }
+    
     window.onload = async () => {
       const videoListContainer = document.getElementById("video-list");
       try {
@@ -350,7 +432,7 @@
       }
     }
 
-    
+
     let typingTimeout; // Variable to store typing timeout
     function startTyping() {
       if (!typingTimeout) {
