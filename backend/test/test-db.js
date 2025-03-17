@@ -1,7 +1,5 @@
 import { connectDB, client } from '../config/db.js';
 
-
-
 async function testDBConnection() {
   try {
     const db = await connectDB();

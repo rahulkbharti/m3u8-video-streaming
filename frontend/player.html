@@ -202,7 +202,7 @@
         </section>
     </main>
     <footer>
-        <p>&copy; Filmora Media Direct, LLC. All rights reserved</p>
+        <p>&copy; < Video Stream />. All rights reserved</p>
         <ul>
             <li>Privacy</li>
             <li>Terms</li>
@@ -217,6 +217,7 @@
    
 
     <script>
+        const baseURL = "https://m3u8-backend-server.onrender.com";
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('player');
             const urlParams = new URLSearchParams(window.location.search);
@@ -228,7 +229,7 @@
             }
 
             console.log(`Video ID: ${videoId}`);
-            fetch(`http://localhost:3000/watch/${videoId}`).then(e => e.json()).then(e => {
+            fetch(`${baseURL}/watch/${videoId}`).then(e => e.json()).then(e => {
                  const videoTitle = document.getElementById('video-title');
                  const videoDesc = document.getElementById('video-desc');
                  videoTitle.textContent = e.file.title;
@@ -236,7 +237,7 @@
             });
             // Construct the correct video source URL
             // const source = `https://manifest.prod.boltdns.net/manifest/v1/hls/v4/aes128/3588749423001/90c37f9c-9377-4761-9c68-2d8c0fa3cc4d/d6d3d70f-4fca-425e-bbb0-a2cbeed01817/10s/rendition.m3u8?fastly_token=NjdkNzA2MmNfNDAwYjQ1ZDNmMzBiNjEyYjYyNzY2Mzc3MDI2OTBmOWQzOGQwZTI0ZmMzOWIwMzgwYzgwNmRkNDgyNzNkZDkyMg%3D%3D`;
-            const source = `http://localhost:3000/watch/${videoId}/master.m3u8`;
+            const source = `${baseURL}/watch/${videoId}/master.m3u8`;
             const defaultOptions = {
                 controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
                 quality: {
@@ -252,7 +253,7 @@
                 },
                 previewThumbnails: {
                     enabled: true, // Enable hover preview thumbnails
-                    src: `http://localhost:3000/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
+                    src: `${baseURL}/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
                 }
             };
 
