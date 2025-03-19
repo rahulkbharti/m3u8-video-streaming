@@ -46,7 +46,7 @@
         }
 
         .hero {
-            padding: 50px 20px;
+            padding: 0px 20px;
             /* background: url('./img/image.png') no-repeat center center/cover; */
             text-align: left;
             /* height: 500px; */
@@ -96,6 +96,21 @@
             width: 150px;
             height: 220px;
             border-radius: 10px;
+        }
+        .movie1 img {
+            width: 220px;
+            border-radius: 10px;
+        }
+        .movie1 h4 {
+            width: 220px;
+            color: #f5f5f5;
+        }
+
+        .movie1 a :hover {
+            color:red;
+        }
+        .movie1 a{
+            text-decoration: none;
         }
 
         .top-10 {
@@ -239,10 +254,10 @@
         <section class="section">
             <h3>Trending Now</h3>
             <div class="movie-list" id="trending">
-                <div class="movie"><a href="#"><img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie"></a>
+                <!-- <div class="movie"><a href="#"><img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie"></a>
                 </div>
                 <div class="movie"><a href="#"><img src="./movie/Download-Smile-to-Life.jpg" alt="Movie"></a></div>
-                <div class="movie"><a href="#"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Movie"></a></div>
+                <div class="movie"><a href="#"><img src="./movie/Dr.STONE-Anime-Series.jpg" alt="Movie"></a></div> -->
             </div>
         </section>
 
@@ -398,6 +413,43 @@
                 });
             }
         }
+
+        window.onload = async () => {
+      const videoListContainer = document.getElementById("trending");
+      try {
+        // Fetch video list from the server
+        const response = await fetch(`${baseURL}/watch`);
+        // console.log(response.json())
+        const videos = await response.json();
+        console.log(videos.files)
+        if (videos.files.length === 0) {
+          videoListContainer.innerHTML = "<p>No videos found.</p>";
+          return;
+        }
+
+        // Create and append video links dynamically
+        videos.files.slice(0, 5).forEach(video => {
+          // const videoLink = document.createElement("a");
+          // videoLink.href = `./player.html?v=${video.videoId}`;
+          // videoLink.textContent = video.title;
+          // videoLink.style.display = "block"; // New line for each video
+          // videoListContainer.appendChild(videoLink);
+          videoListContainer.innerHTML += `<div class="movie1">
+        <a href="./player.html?v=${video.videoId}">
+          <img
+            src="${baseURL}/watch/${video.videoId}/poster.png"
+            alt="${video.title}"
+          />
+          <h4>${video.title}</h4>
+        </a>
+        </div>`
+        });
+
+      } catch (error) {
+        console.error("Error fetching videos:", error);
+        videoListContainer.innerHTML = "<p>Error loading videos.</p>";
+      }
+    }
     </script>
 </body>
 
