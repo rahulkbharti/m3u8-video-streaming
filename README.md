@@ -69,6 +69,9 @@ DOCKER_PASSWORD="Your_Docker_Tocken"
 
 RENDER_API_KEY="Your_Render_API_KEY"
 RENDER_SERVICE_ID="Your_Render_Service_ID"
+
+AZURE_STORAGE_CONNECTION_STRING="Youre_Azure_connection_string"
+AZURE_CONTAINER_NAME="Azure_container_Name"
 ```
 
 
