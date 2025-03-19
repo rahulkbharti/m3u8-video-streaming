@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+        progress {
+            width: 100%;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Upload Video</h2>
+    <input type="file" id="videoInput" accept="video/mp4">
+    <button onclick="uploadVideo()">Upload</button>
+    <progress id="progressBar" value="0" max="100" style="display: none;"></progress>
+    <p id="status"></p>
+
+    <script>
+        async function uploadVideo() {
+            const fileInput = document.getElementById('videoInput');
+            const progressBar = document.getElementById('progressBar');
+            const statusText = document.getElementById('status');
+
+            if (!fileInput.files.length) {
+                alert('Please select a video file.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('video', file);
+
+            progressBar.style.display = 'block';
+            progressBar.value = 0;
+            statusText.innerText = 'Uploading...';
+
+            try {
+                const response = await fetch('http://localhost:5000/upload', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        // No need to set Content-Type when using FormData, browser sets it automatically
+                    },
+                });
+
+                if (response.ok) {
+                    statusText.innerText = '✅ Upload successful!';
+                    progressBar.value = 100;
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusText.innerText = '❌ Upload failed!';
+            }
+        }
+    </script>
+
+</body>
+</html>
