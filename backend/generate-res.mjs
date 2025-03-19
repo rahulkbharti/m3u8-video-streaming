@@ -2,10 +2,11 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import * as path from 'path';
 import * as fs from 'fs';
+import { uploadDirectory, deleteLocalDirectory, deleteAzureDirectory } from './azureUploader.js';
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-const SEGMENT_DURATION = 6;
+const SEGMENT_DURATION = 10;
 
 // Get video resolution
 const getVideoResolution = (filePath) => {
@@ -70,6 +71,7 @@ ${path.join(res.name, `playlist-${res.name}.m3u8`)}`
     console.log('🎬 Master M3U8 created successfully!');
 };
 
+// Generate poster thumbnail
 const generatePosterThumbnail = (filePath, outputPath) => {
     return new Promise((resolve, reject) => {
         ffmpeg(filePath)
@@ -146,7 +148,6 @@ const createVTTFile = (thumbnailPath, vttFilePath) => {
     const files = fs.readdirSync(thumbnailPath)
         .filter(file => file.endsWith('.png'))
     // .sort();
-
     const vttContent = files.map((file, index) => {
         const timestamp = index * SEGMENT_DURATION;
         return `${String(Math.floor(timestamp / 60)).padStart(2, '0')}:${String(timestamp % 60).padStart(2, '0')}.000 --> ${String(Math.floor((timestamp + SEGMENT_DURATION) / 60)).padStart(2, '0')}:${String((timestamp + SEGMENT_DURATION) % 60).padStart(2, '0')}.000\nthumbnails/${file}`;
@@ -188,15 +189,23 @@ const processVideo = async (filePath, onProgress) => {
         const firstResolutionPath = path.join(baseOutputPath, applicableResolutions[0].name);
         const thumbnailPath = path.join(baseOutputPath, 'thumbnails');
         createDirectories(thumbnailPath);
+        // Genrete thumbnails Preview
         await generateThumbnails(resolvedPath, thumbnailPath, firstResolutionPath);
         // Generate poster thumbnail
         await generatePosterThumbnail(resolvedPath, baseOutputPath);
         const vttFilePath = path.join(baseOutputPath, 'thumbnails.vtt');
         createVTTFile(thumbnailPath, vttFilePath);
-
         createMasterM3U8(baseOutputPath, applicableResolutions);
-
         console.log('✅ All resolutions processed successfully!');
+        
+        // Upload HLS files to Azure
+        const localVideoPath = path.join(process.cwd(), 'streams', fileName); // Your video folder
+        // **Upload and then delete locally**
+        await uploadDirectory(localVideoPath, `streams/${fileName}`)
+        console.log('🚀 All files uploaded successfully!');
+        deleteLocalDirectory(localVideoPath);
+        console.log('🗑️ Deleted local directory:', localVideoPath);
+
     } catch (err) {
         console.error('❌ Error processing video:', err);
     }
