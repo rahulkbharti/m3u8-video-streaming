@@ -185,9 +185,10 @@
         max-width: 100%;
         padding: 0;
       }
+
       .movie img {
         height: auto;
-       }
+      }
     }
 
     /* WebKit Scrollbar (Chrome, Edge, Safari) */
@@ -211,6 +212,38 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #555;
       /* Thumb color on hover */
+    }
+
+
+    .waiting-connection,
+    .connected {
+      width: 90%;
+      margin: 20px auto;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .waiting-connection {
+      background-color: #ffcc00;
+      color: #333;
+      border: 2px solid #e6b800;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .waiting-connection small {
+      display: block;
+      font-size: 12px;
+      margin-top: 5px;
+      color: #666;
+    }
+
+    .connected {
+      background-color: #4caf50;
+      color: white;
+      border: 2px solid #388e3c;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      display: none;
     }
   </style>
 </head>
@@ -295,6 +328,12 @@
     <section class="movies">
       <h3>Top Trending</h3>
       <div class="movie-list" id="video-list">
+        <div class="waiting-connection" id="waiting-connection">
+          Waiting for connection... <small>This is a free server, so you may have to wait up to 50 seconds.</small>
+        </div>
+        <div class="connected" id="connected">
+          Now you are connected to the chatbot. Ask your queries.
+        </div>
         <!-- <div class="movie">
           <a href="#changes">
             <img src="./movie/1923-Season-1-English-Web-Series.jpg" alt="Movie 1" />
@@ -384,8 +423,8 @@
           titleE.style.display = "block";
         });
     }
-    
-    
+
+
     const filterCategory = (category) => {
       const titleE = document.getElementById("title-value");
       titleE.style.display = "block";
@@ -393,7 +432,7 @@
       searchBox.value = category;
       searchVideo(category);
     }
-    
+
     window.onload = async () => {
       const videoListContainer = document.getElementById("video-list");
       try {
@@ -402,6 +441,8 @@
         // console.log(response.json())
         const videos = await response.json();
         console.log(videos.files)
+        // document.getElementById("connected").style.display = "block";
+        document.getElementById("waiting-connection").style.display = "none";
         if (videos.files.length === 0) {
           videoListContainer.innerHTML = "<p>No videos found.</p>";
           return;
