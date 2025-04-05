@@ -23,6 +23,10 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_C
 const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 const sharedKeyCredential = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY);
 
+
+const signedUrlCache = new Map();
+const cacheDuration = 10 * 60 * 1000; // 10 minutes
+
 const streamBlob = async (blobName, res) => {
     try {
         const blobClient = containerClient.getBlobClient(blobName);
@@ -41,10 +45,18 @@ const streamBlob = async (blobName, res) => {
     }
 };
 
-const generateSasUrl = (blobName, expiryMinutes = 10) => {
+const generateSasUrl = (blobName, expiryMinutes = 1) => {
+    const cacheKey = `${blobName}`;
+    const now = Date.now();
+
+    const cached = signedUrlCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+        return cached.url;
+    }
+
     try {
         const blobClient = containerClient.getBlobClient(blobName);
-        const expiresOn = new Date(Date.now() + expiryMinutes * 60 * 1000);
+        const expiresOn = new Date(now + expiryMinutes * 60 * 1000);
 
         const sasToken = generateBlobSASQueryParameters({
             containerName: CONTAINER_NAME,
@@ -52,13 +64,28 @@ const generateSasUrl = (blobName, expiryMinutes = 10) => {
             permissions: BlobSASPermissions.parse("r"),
             expiresOn,
         }, sharedKeyCredential).toString();
-        return `${blobClient.url}?${sasToken}`;
+
+        const signedUrl = `${blobClient.url}?${sasToken}`;
+        signedUrlCache.set(cacheKey, {
+            url: signedUrl,
+            expiresAt: now + expiryMinutes * 60 * 1000 - 10 * 1000, // 10 sec safety margin
+        });
+
+        return signedUrl;
     } catch (error) {
         console.error(`Error generating SAS URL for blob: ${blobName}`, error);
         throw new Error('Failed to generate SAS URL');
     }
-
 };
+setInterval(() => {
+    const now = Date.now();
+    for (const [key, value] of signedUrlCache.entries()) {
+        if (value.expiresAt <= now) {
+            signedUrlCache.delete(key);
+        }
+    }
+}, 60 * 1000); // clean every minute
+
 
 // 📌 Get All Videos
 router.get("/", async (req, res) => {
