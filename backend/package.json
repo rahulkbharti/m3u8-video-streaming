@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "node ./test/test-db.js",
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +30,7 @@
     "progress-stream": "^2.0.0",
     "socket.io": "^4.8.1",
     "stream": "^0.0.3",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "winston": "^3.17.0"
   }
 }

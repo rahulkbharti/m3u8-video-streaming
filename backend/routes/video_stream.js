@@ -8,6 +8,7 @@ import {
 } from '@azure/storage-blob';
 import dotenv from 'dotenv';
 import fileModel from '../models/file_model.js';
+import logger from '../utils/logger.js';
 
 const environment = process.env.NODE_ENV || 'development';
 dotenv.config({ path: `.env.${environment}` });
@@ -25,7 +26,7 @@ const sharedKeyCredential = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT
 
 
 const signedUrlCache = new Map();
-const cacheDuration = 10 * 60 * 1000; // 10 minutes
+// const cacheDuration = 10 * 60 * 1000; // 10 minutes
 
 const streamBlob = async (blobName, res) => {
     try {
@@ -45,12 +46,13 @@ const streamBlob = async (blobName, res) => {
     }
 };
 
-const generateSasUrl = (blobName, expiryMinutes = 1) => {
+const generateSasUrl = (blobName, expiryMinutes = 10) => {
     const cacheKey = `${blobName}`;
     const now = Date.now();
 
     const cached = signedUrlCache.get(cacheKey);
     if (cached && cached.expiresAt > now) {
+        // logger.info(`Using cached signed URL for blob: ${blobName}`);
         return cached.url;
     }
 
@@ -70,6 +72,8 @@ const generateSasUrl = (blobName, expiryMinutes = 1) => {
             url: signedUrl,
             expiresAt: now + expiryMinutes * 60 * 1000 - 10 * 1000, // 10 sec safety margin
         });
+
+        // logger.info(`Generated SAS URL | Blob: ${blobName} | Expires At: ${expiresOn.toISOString()}`);
 
         return signedUrl;
     } catch (error) {
