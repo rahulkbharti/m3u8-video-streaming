@@ -26,6 +26,8 @@
             justify-content: space-between;
             padding: 10px 20px;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
             /* background: #111; */
         }
 
@@ -97,19 +99,22 @@
             height: 220px;
             border-radius: 10px;
         }
+
         .movie1 img {
             width: 220px;
             border-radius: 10px;
         }
+
         .movie1 h4 {
             width: 220px;
             color: #f5f5f5;
         }
 
         .movie1 a :hover {
-            color:red;
+            color: red;
         }
-        .movie1 a{
+
+        .movie1 a {
             text-decoration: none;
         }
 
@@ -153,7 +158,6 @@
         }
 
         .container {
-            width: 90%;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -162,22 +166,26 @@
             header {
                 height: 50px;
             }
-            .hero{
+
+            .hero {
                 padding-top: 15px;
                 padding-bottom: 15px;
             }
-             nav{
+
+            nav {
                 display: none;
-             }
+            }
+
             .hero h2 {
                 font-size: 1em;
             }
+
             footer ul {
                 overflow-x: scroll;
                 max-width: 100%;
                 padding: 0;
             }
-            
+
         }
 
         .top-10 {
@@ -213,22 +221,22 @@
 
 <body>
     <header>
-        <h1 style="font-size: 18px;">
-            < VIDEO STREAM />
-        </h1>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="#">Movies</a></li>
-                <li><a href="#">Series</a></li>
-                <li><a href="#">TV Shows</a></li>
-                <li><a href="#">Browse By Language</a></li>
-            </ul>
-        </nav>
+            <h1 style="font-size: 18px;">
+                < VIDEO STREAM />
+            </h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#">Movies</a></li>
+                    <li><a href="#">Series</a></li>
+                    <li><a href="#">TV Shows</a></li>
+                    <li><a href="#">Browse By Language</a></li>
+                </ul>
+            </nav>
     </header>
     <main class="container">
         <div class="hero">
-            <video id="player" controls autoplay width="100%"></video>
+            <video id="player" playsinline controls autoplay preload width="100%"></video>
             <h2 id="video-title">HARRY POTTER AND THE PHILOSOPHER'S STONE</h2>
             <p id="video-desc">Harry Potter, an eleven-year-old orphan, discovers that he is a wizard and is invited to
                 study at Hogwarts...</p>
@@ -327,64 +335,106 @@
             }
 
             console.log(`Video ID: ${videoId}`);
-            fetch(`${baseURL}/watch/${videoId}`).then(e => e.json()).then(e => {
-                const videoTitle = document.getElementById('video-title');
-                const videoDesc = document.getElementById('video-desc');
-                videoTitle.textContent = e.file.title;
-                videoDesc.textContent = e.file.description;
-            });
-            // Construct the correct video source URL
-            // const source = `https://manifest.prod.boltdns.net/manifest/v1/hls/v4/aes128/3588749423001/90c37f9c-9377-4761-9c68-2d8c0fa3cc4d/d6d3d70f-4fca-425e-bbb0-a2cbeed01817/10s/rendition.m3u8?fastly_token=NjdkNzA2MmNfNDAwYjQ1ZDNmMzBiNjEyYjYyNzY2Mzc3MDI2OTBmOWQzOGQwZTI0ZmMzOWIwMzgwYzgwNmRkNDgyNzNkZDkyMg%3D%3D`;
+            fetch(`${baseURL}/watch/${videoId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('video-title').textContent = data.file.title;
+                    document.getElementById('video-desc').textContent = data.file.description;
+                    video.setAttribute('poster', `${baseURL}/watch/${videoId}/poster.png`);
+                });
+
             const source = `${baseURL}/watch/${videoId}/master.m3u8`;
+
             const defaultOptions = {
                 controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
                 quality: {
-                    default: 0, // Auto quality
+                    default: 0,
                     options: [],
                     forced: true,
-                    onChange: (e) => updateQuality(e)
+                    onChange: updateQuality
                 },
                 i18n: {
-                    qualityLabel: {
-                        0: "Auto"
-                    }
+                    qualityLabel: { 0: "Auto" }
                 },
                 previewThumbnails: {
-                    enabled: true, // Enable hover preview thumbnails
-                    src: `${baseURL}/watch/${videoId}/thumbnails.vtt` // Make sure VTT file exists
+                    enabled: true,
+                    src: `${baseURL}/watch/${videoId}/thumbnails.vtt`
                 }
             };
 
             if (Hls.isSupported()) {
                 const hls = new Hls({
-                    maxBufferLength: 15,
-                    maxMaxBufferLength: 15,
-                    maxBufferSize: 60 * 1000 * 1000, // 60MB
-                    maxBufferHole: 2,
-                    startLevel: -1,
+                    startLevel: -1, // Let it pick best based on bandwidth
                     autoStartLoad: true,
+                    abrEwmaFastVoD: 1.0,
+                    abrEwmaSlowVoD: 3.0,
+                    abrBandWidthFactor: 0.8,
+                    abrBandWidthUpFactor: 0.7,
+                    maxBufferLength: 10, // Maximum buffer length in seconds
+                    maxBufferSize: 30 * 1000 * 1000, // Maximum buffer size (30MB)
                 });
 
                 hls.loadSource(source);
                 hls.attachMedia(video);
                 window.hls = hls;
 
+                let fragStartTime = 0; // to track the start time of a fragment download
+
+                hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+                    fragStartTime = Date.now(); // Record the time when chunk starts downloading
+                });
+
+                hls.on(Hls.Events.FRAG_LOADED, (event, data) => {
+                    const fragEndTime = Date.now();
+                    const downloadTime = (fragEndTime - fragStartTime) / 1000; // Time in seconds
+                    console.log(`Chunk download time: ${downloadTime}s`);
+
+                    // Get buffer info and decide whether to adjust the quality
+                    const bufferInfo = hls.bufferInfo;
+                    const bufferLength = bufferInfo.len; // in seconds
+                    const bufferSize = bufferInfo.total; // in bytes
+
+                    console.log(`Buffer Length: ${bufferLength}s, Buffer Size: ${bufferSize}bytes`);
+
+                    // If the buffer length is too large, switch to lower quality
+                    if (bufferLength > 5 || bufferSize > 30 * 1000 * 1000) {
+                        console.log('Buffer is too large, switching to lower quality...');
+                        if (hls.levels.length > 1) {
+                            hls.currentLevel = 0; // Switch to the lowest quality
+                        }
+                    }
+
+                    // If buffer length is small and download time is low, increase quality
+                    if (bufferLength < 5 && downloadTime < 3) {
+                        console.log('Buffer is small and download is fast, switching to higher quality...');
+                        hls.currentLevel = hls.levels.length - 1; // Switch to the highest quality
+                    }
+                });
+
                 hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
                     const availableQuality = hls.levels.map((l) => l.height);
-                    availableQuality.unshift(0); // Add auto option
+                    availableQuality.unshift(0); // Add auto
                     defaultOptions.quality.options = availableQuality;
                     new Plyr(video, defaultOptions);
+                });
+
+                hls.on(Hls.Events.FRAG_LOADED, () => {
+                    console.log("⏳ Bandwidth:", Math.round(hls.bandwidthEstimate / 1000), "kbps");
+                });
+
+                hls.on(Hls.Events.LEVEL_SWITCHED, function (_, data) {
+                    console.log("🔀 Switched to level (quality):", hls.levels[data.level].height + "p");
                 });
 
                 hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.error('Fatal network error encountered, trying to recover...');
+                                console.error('🔁 Network error. Retrying...');
                                 hls.startLoad();
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.error('Fatal media error encountered, trying to recover...');
+                                console.error('⚠️ Media error. Recovering...');
                                 hls.recoverMediaError();
                                 break;
                             default:
@@ -393,7 +443,6 @@
                         }
                     }
                 });
-
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = source;
                 video.addEventListener('loadedmetadata', () => {
@@ -404,37 +453,38 @@
 
         function updateQuality(newQuality) {
             if (newQuality === 'auto') {
-                window.hls.currentLevel = -1; // Enable auto quality
+                window.hls.currentLevel = -1;
             } else {
-                window.hls.levels.forEach((level, levelIndex) => {
+                window.hls.levels.forEach((level, i) => {
                     if (level.height === newQuality) {
-                        window.hls.currentLevel = levelIndex;
+                        window.hls.currentLevel = i;
                     }
                 });
             }
         }
 
-        window.onload = async () => {
-      const videoListContainer = document.getElementById("trending");
-      try {
-        // Fetch video list from the server
-        const response = await fetch(`${baseURL}/watch`);
-        // console.log(response.json())
-        const videos = await response.json();
-        console.log(videos.files)
-        if (videos.files.length === 0) {
-          videoListContainer.innerHTML = "<p>No videos found.</p>";
-          return;
-        }
 
-        // Create and append video links dynamically
-        videos.files.slice(0, 5).forEach(video => {
-          // const videoLink = document.createElement("a");
-          // videoLink.href = `./player.html?v=${video.videoId}`;
-          // videoLink.textContent = video.title;
-          // videoLink.style.display = "block"; // New line for each video
-          // videoListContainer.appendChild(videoLink);
-          videoListContainer.innerHTML += `<div class="movie1">
+        window.onload = async () => {
+            const videoListContainer = document.getElementById("trending");
+            try {
+                // Fetch video list from the server
+                const response = await fetch(`${baseURL}/watch`);
+                // console.log(response.json())
+                const videos = await response.json();
+                console.log(videos.files)
+                if (videos.files.length === 0) {
+                    videoListContainer.innerHTML = "<p>No videos found.</p>";
+                    return;
+                }
+
+                // Create and append video links dynamically
+                videos.files.slice(0, 5).forEach(video => {
+                    // const videoLink = document.createElement("a");
+                    // videoLink.href = `./player.html?v=${video.videoId}`;
+                    // videoLink.textContent = video.title;
+                    // videoLink.style.display = "block"; // New line for each video
+                    // videoListContainer.appendChild(videoLink);
+                    videoListContainer.innerHTML += `<div class="movie1">
         <a href="./player.html?v=${video.videoId}">
           <img
             src="${baseURL}/watch/${video.videoId}/poster.png"
@@ -443,13 +493,13 @@
           <h4>${video.title}</h4>
         </a>
         </div>`
-        });
+                });
 
-      } catch (error) {
-        console.error("Error fetching videos:", error);
-        videoListContainer.innerHTML = "<p>Error loading videos.</p>";
-      }
-    }
+            } catch (error) {
+                console.error("Error fetching videos:", error);
+                videoListContainer.innerHTML = "<p>Error loading videos.</p>";
+            }
+        }
     </script>
 </body>
 

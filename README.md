@@ -11,52 +11,67 @@ Check out the live demo of the application [here](https://rahulkbharti.github.io
 ### Upload Video:
 ![alt text](upload.png)
 
-## Key Features
+## 🚀 Key Features – HLS Video Streaming Platform
 
-- **Video Uploads**: Users can upload video files through the frontend interface.
-- **Video Processing**: The backend processes uploaded videos to generate multiple resolutions for adaptive streaming.
-- **M3U8 Playlist Generation**: Automatically generates M3U8 playlists for streaming.
-- **Video Streaming**: Streams video content using the M3U8 format.
-- **Responsive Frontend**: User-friendly HTML pages for uploading and playing videos.
-- **Docker Support**: Easily containerize the application using Docker.
-- **CI/CD Integration**: Automated testing and deployment using GitHub Actions.
-- **Database Integration**: Stores metadata about uploaded videos in a database.
-- **Utility Functions**: Common utilities to support various backend operations.
+### ✅ Core Functionalities
 
+- **🎬 Video Uploads**  
+  Users can upload videos via a responsive frontend interface.
 
-## Backend
+- **⚙️ Video Processing**  
+  Backend processes uploaded videos into multiple resolutions (240p–1080p) using **FFmpeg** for adaptive bitrate streaming.
 
-The backend is built with Node.js and Express. It handles video uploads, processing, and streaming.
+- **📃 M3U8 Playlist Generation**  
+  Automatically generates `.m3u8` playlists and `.ts` segments for smooth HLS streaming.
 
-### Key Files
+- **📺 HLS Video Streaming**  
+  Fully supports secure streaming using dynamically rewritten playlists with **signed segment URLs**.
 
-- `index.js`: Main application file.
-- `generate-res.mjs`: Script to generate video resolutions.
-- `routes.js`: Defines the API routes.
-- `common/utils.js`: Utility functions.
-- `config/db.js`: Database configuration.
-- `models/file_model.js`: Database model for files.
+- **🧠 Worker-based FFmpeg Processing**  
+  FFmpeg runs in a **separate Node.js worker process**, ensuring the main server thread is never blocked during heavy video operations.
 
+- **🗃️ MongoDB Integration**  
+  Stores video metadata like title, description, upload time, likes, and resolution formats.
 
+---
 
-## Frontend
+### 🔐 Security & Optimization
 
-The frontend consists of HTML files that provide the user interface for uploading and playing videos.
+- **🔑 Azure Blob Signed URLs**  
+  All media files (playlists, segments, thumbnails) are served via **short-lived signed URLs** with caching for reuse before expiration.
 
-### Key Files
+- **🛡️ AES-128 Encrypted Segments (Planned)**  
+  Supports encrypted HLS segments with signed key delivery (future-ready for DRM-like control).
 
-- `index.html`: Main page.
-- `player.html`: Video player page.
-- `upload.html`: Video upload page.
+- **📡 Real-time Status with Socket.io**  
+  Users uploading videos get **real-time updates** (progress, success, or failure) via websockets.
 
-## Docker & CI/CD
+---
 
-The project includes a Dockerfile for containerization and The project uses GitHub Actions for continuous integration and deployment.
+### 🧰 DevOps & Deployment
 
-### Workflows
+- **🐳 Docker Support**  
+  Easily containerized and deployable using Docker.
 
-- `.github/workflows/main.yml`: Main CI workflow for backend deployment on on render - Build ,test and Deploy.
-- `.github/workflows/static.yml`: Static Site Deployment using github pages workflow.
+- **⚙️ GitHub Actions CI/CD**  
+  Automated workflows for build, test, and deploy stages using GitHub Actions.
+
+- **🚀 Cloud Deployment on Render**  
+  The platform is deployed on **Render.com** using Docker containers. Future-ready for **Kubernetes-based scaling**.
+
+---
+
+### 🌐 Tech Stack
+
+- **Node.js** – REST API & video processing logic  
+- **MongoDB** – Metadata storage  
+- **FFmpeg** – Video transcoding & thumbnail generation  
+- **Azure Blob Storage** – Secure storage of video files  
+- **Socket.io** – Real-time upload and process tracking  
+- **Docker** – Containerization  
+- **GitHub Actions** – CI/CD Pipelines  
+- **Render** – Cloud deployment
+
 
 ### Environment Secrets and Variables
 make sure You have added these Secrets and Variables in your projects.

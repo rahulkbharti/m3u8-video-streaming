@@ -5,6 +5,7 @@ import path from 'path';
 import { Worker } from 'worker_threads';
 import fileModel from '../models/file_model.js';
 import { generateSecureUniqueID } from '../common/utils.js';
+import { deleteAzureDirectory} from '../azureUploader.js';
 
 const router = express.Router();
 
@@ -67,6 +68,33 @@ router.post('/upload', upload.single('video'), async (req, res) => {
 
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+router.delete('/delete/:videoId', async (req, res) => {
+  console.info("Video Delete Request");
+  try {
+    const { videoId } = req.params;
+
+    const video = await fileModel.getVideoByVideoId(videoId);
+    if (!video) {
+      return res.status(404).send('Video not found');
+    }
+
+    // 🚀 Delete video folder from Azure Blob Storage
+    if(!deleteAzureDirectory(`streams/${videoId}`)) return   res.json({ message: 'Video is not deleted from Azure ' }); // Make sure this function deletes all .ts + .m3u8 for this video
+
+    // 🗂 Remove metadata from DB
+    const deleteResult = await fileModel.deleteVideoById(videoId);
+    if (deleteResult) {
+      res.json({ message: 'Video deleted from Azure and DB' });
+    } else {
+      res.status(500).send('Error deleting video from database');
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal server error');
   }
 });
 

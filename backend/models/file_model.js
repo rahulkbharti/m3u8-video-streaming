@@ -30,12 +30,15 @@ class FileModel {
 
   async getAllVideos() {
     try {
-      return await this.collection.find({}).toArray();
+      return await this.collection.find({})
+        .sort({ createdAt: -1 }) // -1 for descending order
+        .toArray();
     } catch (error) {
       console.log(chalk.red('Database Error:', error));
       return error;
     }
   }
+  
 
   async getVideoByVideoId(videoId) {
     try {
@@ -60,6 +63,16 @@ class FileModel {
       return result; // Return matching videos
     } catch (error) {
       console.log(chalk.red('Database Error: ', error));
+      return error;
+    }
+  }
+
+  async deleteVideoById(videoId) {
+    try {
+      const result = await this.collection.deleteOne({ videoId });
+      return result.deletedCount > 0; // Return true if a document was deleted
+    } catch (error) {
+      console.log(chalk.red('Database Error:', error));
       return error;
     }
   }

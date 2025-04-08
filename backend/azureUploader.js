@@ -65,11 +65,27 @@ export const deleteLocalDirectory = (dirPath) => {
  * @param {string} azureDir - Directory path in Azure Blob Storage.
  */
 export const deleteAzureDirectory = async (azureDir) => {
-    let blobs = containerClient.listBlobsFlat({ prefix: azureDir });
+    try {
+        console.log(`🧹 Deleting Azure directory with prefix: ${azureDir}`);
 
-    for await (const blob of blobs) {
-        const blockBlobClient = containerClient.getBlockBlobClient(blob.name);
-        await blockBlobClient.delete();
-        console.log(`🗑️ Deleted: ${blob.name}`);
+        let blobs = containerClient.listBlobsFlat({ prefix: azureDir });
+
+        let deletedAny = false;
+
+        for await (const blob of blobs) {
+            const blockBlobClient = containerClient.getBlockBlobClient(blob.name);
+            await blockBlobClient.delete();
+            console.log(`🗑️ Deleted: ${blob.name}`);
+            deletedAny = true;
+        }
+
+        if (!deletedAny) {
+            console.warn(`⚠️ No blobs found for prefix: ${azureDir}`);
+        }
+
+        return true;
+    } catch (error) {
+        console.error(`❌ Error deleting Azure directory: ${error.message}`);
+        return false;
     }
 };
